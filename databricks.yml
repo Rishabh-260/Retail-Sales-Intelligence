@@ -1,0 +1,15 @@
+bundle:
+  name: retail-sales-promotion-intelligence
+
+include:
+  - resources/*.yml
+
+workspace:
+  # The bundle is uploaded into a user-specific development directory.
+  root_path: ~/.bundle/${bundle.name}/${bundle.target}
+
+targets:
+  dev:
+    default: true
+    mode: development
+

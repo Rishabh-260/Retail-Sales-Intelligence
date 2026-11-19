@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+.databricks/
+.bundle/
+dist/
+build/
+*.egg-info/
+
+# Raw Kaggle data and generated local exports
+data/raw/*
+data/exports/*
+!data/raw/.gitkeep
+!data/exports/.gitkeep
+

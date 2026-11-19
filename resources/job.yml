@@ -1,0 +1,50 @@
+resources:
+  jobs:
+    retail_sales_pipeline:
+      name: retail-sales-promotion-intelligence
+      max_concurrent_runs: 1
+      tasks:
+        - task_key: ingest
+          notebook_task:
+            notebook_path: ../notebooks/01_ingest.py
+            base_parameters:
+              catalog: main
+              schema: retail_intelligence
+              raw_path: /Volumes/main/retail_intelligence/raw
+          job_cluster_key: retail_cluster
+        - task_key: build_marts
+          depends_on:
+            - task_key: ingest
+          notebook_task:
+            notebook_path: ../notebooks/02_build_marts.py
+            base_parameters:
+              catalog: main
+              schema: retail_intelligence
+          job_cluster_key: retail_cluster
+        - task_key: train_forecast
+          depends_on:
+            - task_key: build_marts
+          notebook_task:
+            notebook_path: ../notebooks/03_train_forecast.py
+            base_parameters:
+              catalog: main
+              schema: retail_intelligence
+          job_cluster_key: retail_cluster
+        - task_key: export_powerbi
+          depends_on:
+            - task_key: train_forecast
+          notebook_task:
+            notebook_path: ../notebooks/04_export_powerbi.py
+            base_parameters:
+              catalog: main
+              schema: retail_intelligence
+              raw_path: /Volumes/main/retail_intelligence/raw
+          job_cluster_key: retail_cluster
+      job_clusters:
+        - job_cluster_key: retail_cluster
+          new_cluster:
+            spark_version: 14.3.x-scala2.12
+            node_type_id: m5d.xlarge
+            num_workers: 2
+            data_security_mode: SINGLE_USER
+
